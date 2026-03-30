@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Authentication;
 
 namespace QuickFix
@@ -65,6 +67,15 @@ namespace QuickFix
         /// <c>false</c> if connection should use proxy; otherwise for ignoring proxy, <c>true</c>. The default is <c>false</c>.
         /// </value>
         public bool SocketIgnoreProxy { get; internal set; }
+        public bool ProxyEnabled { get; internal set; }
+        public string? ProxyType { get; internal set; }
+        public string? ProxyHost { get; internal set; }
+        public int? ProxyPort { get; internal set; }
+        public string? ProxyUsername { get; internal set; }
+        public string? ProxyPassword { get; internal set; }
+        public int? ProxyConnectTimeoutMs { get; internal set; }
+        public int? ProxyReadTimeoutMs { get; internal set; }
+        public HashSet<string> ProxyBypassForHosts { get; } = new(StringComparer.OrdinalIgnoreCase);
         #endregion
 
         #region SSL Settings
@@ -156,6 +167,7 @@ namespace QuickFix
             RequireClientCertificate = true;
             SocketNodelay = true;
             SocketIgnoreProxy = false;
+            ProxyType = "HTTP";
         }
 
         /// <summary>
@@ -170,6 +182,38 @@ namespace QuickFix
         {
             if (settingsDictionary.Has(SessionSettings.SOCKET_IGNORE_PROXY))
                 SocketIgnoreProxy = settingsDictionary.GetBool(SessionSettings.SOCKET_IGNORE_PROXY);
+
+            if (settingsDictionary.Has(SessionSettings.PROXY_ENABLED))
+                ProxyEnabled = settingsDictionary.GetBool(SessionSettings.PROXY_ENABLED);
+
+            if (settingsDictionary.Has(SessionSettings.PROXY_TYPE))
+                ProxyType = settingsDictionary.GetString(SessionSettings.PROXY_TYPE);
+
+            if (settingsDictionary.Has(SessionSettings.PROXY_HOST))
+                ProxyHost = settingsDictionary.GetString(SessionSettings.PROXY_HOST);
+
+            if (settingsDictionary.Has(SessionSettings.PROXY_PORT))
+                ProxyPort = settingsDictionary.GetInt(SessionSettings.PROXY_PORT);
+
+            if (settingsDictionary.Has(SessionSettings.PROXY_USERNAME))
+                ProxyUsername = settingsDictionary.GetString(SessionSettings.PROXY_USERNAME);
+
+            if (settingsDictionary.Has(SessionSettings.PROXY_PASSWORD))
+                ProxyPassword = settingsDictionary.GetString(SessionSettings.PROXY_PASSWORD);
+
+            if (settingsDictionary.Has(SessionSettings.PROXY_CONNECT_TIMEOUT_MS))
+                ProxyConnectTimeoutMs = settingsDictionary.GetInt(SessionSettings.PROXY_CONNECT_TIMEOUT_MS);
+
+            if (settingsDictionary.Has(SessionSettings.PROXY_READ_TIMEOUT_MS))
+                ProxyReadTimeoutMs = settingsDictionary.GetInt(SessionSettings.PROXY_READ_TIMEOUT_MS);
+
+            if (settingsDictionary.Has(SessionSettings.PROXY_BYPASS_FOR_HOSTS))
+            {
+                ProxyBypassForHosts.Clear();
+                string[] hosts = settingsDictionary.GetString(SessionSettings.PROXY_BYPASS_FOR_HOSTS).Split(',');
+                foreach (string host in hosts.Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)))
+                    ProxyBypassForHosts.Add(host);
+            }
 
             if (settingsDictionary.Has(SessionSettings.SOCKET_NODELAY))
                 SocketNodelay = settingsDictionary.GetBool(SessionSettings.SOCKET_NODELAY);
