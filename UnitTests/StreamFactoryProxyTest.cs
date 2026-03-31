@@ -97,7 +97,7 @@ public class StreamFactoryProxyTest
             using TcpClient proxyClient = await proxy.AcceptTcpClientAsync();
             using NetworkStream proxyStream = proxyClient.GetStream();
             string headers = await ReadHttpHeaders(proxyStream);
-            StringAssert.Contains($"CONNECT 127.0.0.1:{targetPort} HTTP/1.1", headers);
+            Assert.That(headers, Does.Contain($"CONNECT 127.0.0.1:{targetPort} HTTP/1.1"));
 
             byte[] ok = Encoding.ASCII.GetBytes("HTTP/1.1 200 Connection established\r\n\r\n");
             await proxyStream.WriteAsync(ok, 0, ok.Length);
@@ -189,7 +189,7 @@ public class StreamFactoryProxyTest
             StreamFactory.CreateClientStream(new IPEndPoint(IPAddress.Loopback, 9999), "example.org", settings, NullQuickFixLoggerFactory.Instance));
 
         string headers = await proxyHeadersTask;
-        StringAssert.Contains("Proxy-Authorization: Basic bXl1c2VyOm15cGFzcw==", headers);
+        Assert.That(headers, Does.Contain("Proxy-Authorization: Basic bXl1c2VyOm15cGFzcw=="));
     }
 
     [Test]

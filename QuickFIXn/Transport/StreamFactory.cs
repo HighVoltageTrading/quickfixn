@@ -15,6 +15,8 @@ namespace QuickFix.Transport
     /// </summary>
     internal static class StreamFactory
     {
+        private sealed class StreamFactoryLogCategory { }
+
         private const int DEFAULT_PROXY_CONNECT_TIMEOUT_MS = 10000;
         private const int DEFAULT_PROXY_READ_TIMEOUT_MS = 10000;
 
@@ -167,7 +169,7 @@ namespace QuickFix.Transport
         internal static Stream CreateClientStream(IPEndPoint endpoint, string destinationHostName, SocketSettings settings, IQuickFixLoggerFactory loggerFactory)
         {
             Socket? socket = null;
-            ILogger log = loggerFactory.CreateNonSessionLogger<StreamFactory>();
+            ILogger log = loggerFactory.CreateNonSessionLogger<StreamFactoryLogCategory>();
 
             if (settings.ProxyEnabled && !ShouldBypassConfiguredProxy(settings, destinationHostName))
             {
