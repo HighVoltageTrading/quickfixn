@@ -71,6 +71,15 @@ public class SessionSettings
     public const string CHECK_LATENCY = "CheckLatency";
     public const string MAX_LATENCY = "MaxLatency";
     public const string SOCKET_IGNORE_PROXY = "SocketIgnoreProxy";
+    public const string PROXY_ENABLED = "ProxyEnabled";
+    public const string PROXY_TYPE = "ProxyType";
+    public const string PROXY_HOST = "ProxyHost";
+    public const string PROXY_PORT = "ProxyPort";
+    public const string PROXY_USERNAME = "ProxyUsername";
+    public const string PROXY_PASSWORD = "ProxyPassword";
+    public const string PROXY_CONNECT_TIMEOUT_MS = "ProxyConnectTimeoutMs";
+    public const string PROXY_READ_TIMEOUT_MS = "ProxyReadTimeoutMs";
+    public const string PROXY_BYPASS_FOR_HOSTS = "ProxyBypassForHosts";
     public const string ENCODING = "Encoding";
     public const string CME_ENHANCED_RESEND = "CmeEnhancedResend";
 

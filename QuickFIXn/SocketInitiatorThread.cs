@@ -27,6 +27,7 @@ public class SocketInitiatorThread : IResponder
     private Stream? _stream;
     private readonly CancellationTokenSource _readCancellationTokenSource = new();
     private readonly IPEndPoint _socketEndPoint;
+    private readonly string _socketConnectHost;
     private readonly SocketSettings _socketSettings;
     private readonly IQuickFixLoggerFactory _loggerFactory;
 
@@ -39,6 +40,7 @@ public class SocketInitiatorThread : IResponder
         Transport.SocketInitiator initiator,
         Session session,
         IPEndPoint socketEndPoint,
+        string socketConnectHost,
         SocketSettings socketSettings,
         IQuickFixLoggerFactory loggerFactory)
     {
@@ -47,6 +49,7 @@ public class SocketInitiatorThread : IResponder
         _loggerFactory = loggerFactory;
         NonSessionLog = _loggerFactory.CreateNonSessionLogger<SocketInitiatorThread>();
         _socketEndPoint = socketEndPoint;
+        _socketConnectHost = socketConnectHost;
         _socketSettings = socketSettings;
     }
 
@@ -82,7 +85,7 @@ public class SocketInitiatorThread : IResponder
     /// <returns>Stream representing the (network)connection to the other party</returns>
     protected virtual Stream SetupStream()
     {
-        return Transport.StreamFactory.CreateClientStream(_socketEndPoint, _socketSettings, _loggerFactory);
+        return Transport.StreamFactory.CreateClientStream(_socketEndPoint, _socketConnectHost, _socketSettings, _loggerFactory);
     }
 
     public bool Read()
@@ -203,4 +206,3 @@ public class SocketInitiatorThread : IResponder
 
     #endregion
 }
-

@@ -50,6 +50,36 @@ To run a specific suite, use ``--filter``, e.g.
 
 AcceptanceTest logs are output to `bin/Debug/net6.0/log`.
 
+Initiator HTTP CONNECT Proxy (per-session)
+------------------------------------------
+QuickFIX/n initiator sessions can be configured to open outbound TCP connections through an HTTP CONNECT proxy.
+When enabled, QuickFIX/n connects to the proxy, sends CONNECT for `SocketConnectHost:SocketConnectPort`, and then
+uses the resulting stream as a transparent tunnel for FIX traffic.
+
+Example:
+```
+[DEFAULT]
+ConnectionType=initiator
+BeginString=FIX.4.4
+HeartBtInt=30
+ReconnectInterval=5
+SocketConnectHost=fix.example.com
+SocketConnectPort=9876
+ProxyEnabled=Y
+ProxyType=HTTP
+ProxyHost=proxy.example.net
+ProxyPort=3128
+ProxyUsername=myuser
+ProxyPassword=mypass
+```
+
+Optional settings:
+* `ProxyConnectTimeoutMs`
+* `ProxyReadTimeoutMs`
+* `ProxyBypassForHosts` (comma-separated hosts)
+
+If `ProxyEnabled` is omitted or set to `N`, existing direct connection behavior is unchanged.
+
 
 Credits
 -------

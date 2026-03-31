@@ -124,7 +124,7 @@ namespace QuickFix.Transport
             }
         }
 
-        private IPEndPoint GetNextSocketEndPoint(SessionID sessionId, SettingsDictionary settings)
+        private (IPEndPoint EndPoint, string Host) GetNextSocketEndPoint(SessionID sessionId, SettingsDictionary settings)
         {
             if (!_sessionToHostNum.TryGetValue(sessionId, out var num))
                 num = 0;
@@ -146,7 +146,7 @@ namespace QuickFix.Transport
                 _sessionToHostNum[sessionId] = ++num;
 
                 _socketSettings.ServerCommonName = hostName;
-                return new IPEndPoint(addrs.First(a => a.AddressFamily == AddressFamily.InterNetwork), port);
+                return (new IPEndPoint(addrs.First(a => a.AddressFamily == AddressFamily.InterNetwork), port), hostName);
             }
             catch (Exception e)
             {
@@ -225,7 +225,8 @@ namespace QuickFix.Transport
                 if (!session.IsSessionTime)
                     return;
 
-                IPEndPoint socketEndPoint = GetNextSocketEndPoint(session.SessionID, settings);
+                var connectionTarget = GetNextSocketEndPoint(session.SessionID, settings);
+                IPEndPoint socketEndPoint = connectionTarget.EndPoint;
                 SetPending(session.SessionID);
                 session.Log.Log(LogLevel.Information, "Connecting to {Address} on port {Port}",
                     socketEndPoint.Address, socketEndPoint.Port);
@@ -236,7 +237,7 @@ namespace QuickFix.Transport
 
                 // Create a Ssl-SocketInitiatorThread if a certificate is given
                 SocketInitiatorThread t = new SocketInitiatorThread(
-                    this, session, socketEndPoint, socketSettings, QfLoggerFactory);
+                    this, session, socketEndPoint, connectionTarget.Host, socketSettings, QfLoggerFactory);
                 t.Start();
                 AddThread(t);
             }
